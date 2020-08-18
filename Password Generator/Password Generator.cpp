@@ -56,8 +56,11 @@ void PrintPassword(string file_Name)
 
 	for (int i = 0; i < a_Title.size() ; i++)
 	{
-		cout << a_Title[i] << endl;
-		cout << a_Password[i] << endl;
+		if (a_Title[i] != "")
+		{
+			cout << a_Title[i] << endl;
+			cout << a_Password[i] << endl;
+		}
 	}
 }
 void AddPassword(string file_Name)
@@ -67,18 +70,39 @@ void AddPassword(string file_Name)
 	string name_Password;
 	string new_Password;
 	int length_Password;
+	int input;
 
 	cout << "Input name of password" << endl;
 	cin >> name_Password;
-	cout << "Input length of password" << endl;
-	cin >> length_Password;
+	cout << "0. Create own" << endl << "1. Randomly generate" << endl;
+	cin >> input;
 
-	srand(time(0));
-
-	for (int i = 1; i <= length_Password; i++)
+	if (input > 1 || input < 0)
 	{
-		int v = rand() % 4;//give random value from 0-3
-		new_Password += GenerateCharacter(v);
+		cout << "Invalid Value" << endl;
+		AddPassword("Password");
+	}
+	//create own password
+	if (input == 0)
+	{
+		cout << "Input Password" << endl;
+		string cp;
+		cin >> cp;
+		new_Password = cp;
+	}
+	else
+	//randomly generate password
+	{
+		cout << "Input length of password" << endl;
+		cin >> length_Password;
+
+		srand(time(0));
+
+		for (int i = 1; i <= length_Password; i++)
+		{
+			int v = rand() % 4;//give random value from 0-3
+			new_Password += GenerateCharacter(v);
+		}
 	}
 
 	cout << "Do you accept this password" << endl;
@@ -91,6 +115,7 @@ void AddPassword(string file_Name)
 	{
 		AddPassword("Password");
 	}
+	//Add password in password list
 	if (A == 1)
 	{
 		a_Title.push_back("Title: " + name_Password);
@@ -111,8 +136,8 @@ void ClearAll(string file_Name)
 		//clear out new password
 		for (int i = 0; i < a_Title.size(); i++)
 		{
-			//a_Title[i].clear();
-			//a_Password[i].clear();
+			a_Title[i].clear();
+			a_Password[i].clear();
 		}
 		cout << "All Password Deleted" << endl;
 	}
@@ -122,18 +147,87 @@ void ClearAll(string file_Name)
 }
 void EditPassword()
 {
+	int p_To_Edit;
+	string e_Pssword;
 
+	cout << "which pasword you wish to edit" << endl;
+	for (int i = 0; i < a_Title.size(); i++)
+	{
+		if (a_Title[i] != "")
+		{
+			cout << i << ". " << a_Title[i] << endl;
+		}
+	}
+	cin >> p_To_Edit;
+
+	if (p_To_Edit > a_Title.size())
+	{
+		cout << "Invalid Value" << endl;
+		EditPassword();
+	}
+	else
+	{
+		int input;
+		cout << "0. Create own" << endl << "1. Randomly generate" << endl;
+		cin >> input;
+
+		if (input > 1 || input < 0)
+		{
+			cout << "Invalid Value" << endl;
+			AddPassword("Password");
+		}
+		//create own password
+		if (input == 0)
+		{
+			cout << "Input Password" << endl;
+			cin >> e_Pssword;
+		}
+		else
+		//randomly generate password
+		{
+			int length_Password;
+			cout << "Input length of password" << endl;
+			cin >> length_Password;
+
+			srand(time(0));
+
+			for (int i = 1; i <= length_Password; i++)
+			{
+				int v = rand() % 4;//give random value from 0-3
+				e_Pssword += GenerateCharacter(v);
+			}
+		}
+
+		cout << "Do you accept this password" << endl;
+		cout << e_Pssword << endl;
+		cout << "0 - no" << endl << "1 - yes" << endl;
+
+		int A;
+		cin >> A;
+
+		if (A == 0)
+		{
+			AddPassword("Password");
+		}
+		//Add password in password list
+		if (A == 1)
+		{
+			a_Password[p_To_Edit] = e_Pssword;
+		}
+	}
 }
 void DeletePassword()
 {
-	
 	int selecting_Password;
 	char state;
 
 	cout << "which pasword you wish to delete" << endl;
 	for (int i = 0; i < a_Title.size(); i++)
 	{
-		cout << i << ". " << a_Title[i] << endl;
+		if (a_Title[i] != "")
+		{
+			cout << i << ". " << a_Title[i] << endl;
+		}
 	}
 	cin >> selecting_Password;
 	if (selecting_Password > a_Title.size())
@@ -147,11 +241,8 @@ void DeletePassword()
 
 	if (state == 'y')
 	{
-		a_Title[selecting_Password].erase();
-		a_Password[selecting_Password].erase();
-		/*a_Title[selecting_Password] = '\0';
-		a_Password[selecting_Password] = '\0';*/
-
+		a_Title[selecting_Password].clear();
+		a_Password[selecting_Password].clear();
 	}
 	if (state == 'n')
 	{
@@ -191,7 +282,7 @@ void InputCommandCode()
 	}
 	if (input_Command == 4)
 	{
-		ClearAll("Password");
+		EditPassword();
 	}
 	if (input_Command == 5)
 	{
@@ -226,8 +317,11 @@ void CloseProgram()
 		//input newly created password into string
 		for (int i = 0; i < a_Title.size(); i++)
 		{
-			new_List_Password += a_Title[i] + '\n';
-			new_List_Password += a_Password[i] + '\n';
+			if (a_Title[i] != "")
+			{
+				new_List_Password += a_Title[i] + '\n';
+				new_List_Password += a_Password[i] + '\n';
+			}
 		}
 		//set string input all newly created password in text file
 		OF_Password.open("Password.txt");
